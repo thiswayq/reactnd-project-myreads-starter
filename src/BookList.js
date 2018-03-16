@@ -14,6 +14,7 @@ const BookList = props => (
           key={props.books[shelf].title}
           title={props.books[shelf].title}
           books={props.books[shelf].books}
+          onUpdate={props.onUpdate}
         />
       ))}
     </div>

@@ -36,6 +36,21 @@ class BooksApp extends React.Component {
       });
     });
   }
+
+  updateBook = (book, shelf) => {
+    BooksAPI.update(book, shelf).then(res => {
+      this.setState(state => {
+        Object.keys(state.books).map(
+          shelf =>
+            (state.books[shelf].books = state.books[shelf].books.filter(
+              bookInShelf => bookInShelf.id !== book.id
+            ))
+        );
+        if (shelf !== "none") state.books[shelf].books.push(book);
+      });
+    });
+  };
+
   render() {
     return (
       <Router>
@@ -44,7 +59,9 @@ class BooksApp extends React.Component {
           <Route
             exact
             path="/"
-            render={() => <BookList books={this.state.books} />}
+            render={() => (
+              <BookList books={this.state.books} onUpdate={this.updateBook} />
+            )}
           />
         </div>
       </Router>
