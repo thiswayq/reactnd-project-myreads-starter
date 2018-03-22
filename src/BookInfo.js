@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import noBookCover from "./images/noimage.jpg";
 
 class BookInfo extends React.Component {
   handleChange = event => {
@@ -11,7 +12,11 @@ class BookInfo extends React.Component {
         <div className="book-top">
           <img
             className="book-cover"
-            src={this.props.book.imageLinks.thumbnail}
+            src={
+              this.props.book.imageLinks
+                ? this.props.book.imageLinks.thumbnail
+                : noBookCover
+            }
           />
           <div className="book-shelf-changer">
             <select value={this.props.book.shelf} onChange={this.handleChange}>

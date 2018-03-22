@@ -5,30 +5,40 @@ import * as BooksAPI from "./BooksAPI";
 import BookInfo from "./BookInfo";
 class Search extends Component {
   state = {
-    searchedBooks: []
+    searchedBooks: [],
+    errorMessage: false
   };
   makeSearch = query => {
     if (!query) {
       this.setState(state => {
         state.searchedBooks = [];
+        state.errorMessage = false;
       });
     } else {
       BooksAPI.search(query).then(response => {
-        response.map(searchedBook => {
-          Object.keys(this.props.books).map(shelf =>
-            this.props.books[shelf].books.map(book => {
-              if (searchedBook.id === book.id) {
-                searchedBook.shelf = book.shelf;
-              }
-              if (!searchedBook.shelf) {
-                searchedBook.shelf = "none";
-              }
-            })
-          );
-        });
-        this.setState(state => {
-          state.searchedBooks = response;
-        });
+        if (!response.error) {
+          response.map(searchedBook => {
+            Object.keys(this.props.books).map(shelf =>
+              this.props.books[shelf].books.map(book => {
+                if (searchedBook.id === book.id) {
+                  searchedBook.shelf = book.shelf;
+                }
+                if (!searchedBook.shelf) {
+                  searchedBook.shelf = "none";
+                }
+              })
+            );
+          });
+          this.setState(state => {
+            state.searchedBooks = response;
+            state.errorMessage = false;
+          });
+        } else {
+          this.setState(state => {
+            state.searchedBook = [];
+            state.errorMessage = true;
+          });
+        }
       });
     }
   };
@@ -57,11 +67,15 @@ class Search extends Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {this.state.searchedBooks.map(book => (
-              <li key={book.id}>
-                <BookInfo book={book} onUpdate={this.props.onUpdate} />
-              </li>
-            ))}
+            {this.state.errorMessage ? (
+              <h1>Couldn't find the given book</h1>
+            ) : (
+              this.state.searchedBooks.map(book => (
+                <li key={book.id}>
+                  <BookInfo book={book} onUpdate={this.props.onUpdate} />
+                </li>
+              ))
+            )}
           </ol>
         </div>
       </div>
